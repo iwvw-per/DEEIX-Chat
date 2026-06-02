@@ -213,6 +213,7 @@ type yamlConfig struct {
 		TurnstileSiteverifyURL string `yaml:"turnstile_siteverify_url"`
 	} `yaml:"security"`
 	Database struct {
+		Type     string `yaml:"type"`
 		Postgres struct {
 			DSN                string `yaml:"dsn"`
 			MaxOpenConns       int    `yaml:"max_open_conns"`
@@ -220,6 +221,13 @@ type yamlConfig struct {
 			ConnMaxLifetimeMin int    `yaml:"conn_max_lifetime_minutes"`
 			ConnMaxIdleTimeMin int    `yaml:"conn_max_idle_time_minutes"`
 		} `yaml:"postgres"`
+		Sqlite struct {
+			DSN                string `yaml:"dsn"`
+			MaxOpenConns       int    `yaml:"max_open_conns"`
+			MaxIdleConns       int    `yaml:"max_idle_conns"`
+			ConnMaxLifetimeMin int    `yaml:"conn_max_lifetime_minutes"`
+			ConnMaxIdleTimeMin int    `yaml:"conn_max_idle_time_minutes"`
+		} `yaml:"sqlite"`
 		Redis struct {
 			Addr     string `yaml:"addr"`
 			Password string `yaml:"password"`
@@ -281,11 +289,17 @@ type Config struct {
 	JWTSecret                    string
 	DataEncryptionKey            string
 	SSRFProtectionEnabled        bool
+	DatabaseType                 string
 	PostgresDSN                  string
 	PostgresMaxOpenConns         int
 	PostgresMaxIdleConns         int
 	PostgresConnMaxLifetimeMin   int
 	PostgresConnMaxIdleTimeMin   int
+	SqliteDSN                    string
+	SqliteMaxOpenConns           int
+	SqliteMaxIdleConns           int
+	SqliteConnMaxLifetimeMin     int
+	SqliteConnMaxIdleTimeMin     int
 	RedisAddr                    string
 	RedisPassword                string
 	RedisDB                      int
@@ -485,11 +499,17 @@ func Load() Config {
 		JWTSecret:                    envOr("JWT_SECRET", yc.Security.JWTSecret, defaultJWTSecret),
 		DataEncryptionKey:            envOr("DATA_ENCRYPTION_KEY", yc.Security.DataEncryptionKey, defaultDataEncryptionKey),
 		SSRFProtectionEnabled:        envOrBoolPtr("SSRF_PROTECTION_ENABLED", yc.Security.SSRFProtectionEnabled, false),
+		DatabaseType:                 envOr("DATABASE_TYPE", yc.Database.Type, "postgres"),
 		PostgresDSN:                  envOr("POSTGRES_DSN", yc.Database.Postgres.DSN, "host=127.0.0.1 user=deeix_chat password=deeix_chat_dev_2026 dbname=deeix_chat port=5432 sslmode=disable TimeZone=Asia/Shanghai"),
 		PostgresMaxOpenConns:         envOrInt("POSTGRES_MAX_OPEN_CONNS", yc.Database.Postgres.MaxOpenConns, 30),
 		PostgresMaxIdleConns:         envOrInt("POSTGRES_MAX_IDLE_CONNS", yc.Database.Postgres.MaxIdleConns, 10),
 		PostgresConnMaxLifetimeMin:   envOrInt("POSTGRES_CONN_MAX_LIFETIME_MINUTES", yc.Database.Postgres.ConnMaxLifetimeMin, 60),
 		PostgresConnMaxIdleTimeMin:   envOrInt("POSTGRES_CONN_MAX_IDLE_TIME_MINUTES", yc.Database.Postgres.ConnMaxIdleTimeMin, 10),
+		SqliteDSN:                    envOr("SQLITE_DSN", yc.Database.Sqlite.DSN, "deeix_chat.db"),
+		SqliteMaxOpenConns:           envOrInt("SQLITE_MAX_OPEN_CONNS", yc.Database.Sqlite.MaxOpenConns, 5),
+		SqliteMaxIdleConns:           envOrInt("SQLITE_MAX_IDLE_CONNS", yc.Database.Sqlite.MaxIdleConns, 5),
+		SqliteConnMaxLifetimeMin:     envOrInt("SQLITE_CONN_MAX_LIFETIME_MINUTES", yc.Database.Sqlite.ConnMaxLifetimeMin, 60),
+		SqliteConnMaxIdleTimeMin:     envOrInt("SQLITE_CONN_MAX_IDLE_TIME_MINUTES", yc.Database.Sqlite.ConnMaxIdleTimeMin, 10),
 		RedisAddr:                    envOr("REDIS_ADDR", yc.Database.Redis.Addr, "127.0.0.1:6379"),
 		RedisPassword:                envOr("REDIS_PASSWORD", yc.Database.Redis.Password, ""),
 		RedisDB:                      envOrInt("REDIS_DB", yc.Database.Redis.DB, 0),

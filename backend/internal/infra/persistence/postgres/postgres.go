@@ -9,14 +9,22 @@ import (
 
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/config"
 	"github.com/DEEIX-AI/DEEIX-Chat/backend/internal/infra/persistence/models"
+	"github.com/glebarez/sqlite"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	gormlogger "gorm.io/gorm/logger"
 )
 
-// New 初始化 PostgreSQL 连接并执行迁移与种子数据。
+// New 初始化数据库连接并执行迁移与种子数据。
 func New(cfg config.Config) (*gorm.DB, error) {
-	db, err := gorm.Open(postgres.Open(cfg.PostgresDSN), newGORMConfig(cfg))
+	var dialector gorm.Dialector
+	if strings.ToLower(strings.TrimSpace(cfg.DatabaseType)) == "sqlite" {
+		dialector = sqlite.Open(cfg.SqliteDSN)
+	} else {
+		dialector = postgres.Open(cfg.PostgresDSN)
+	}
+
+	db, err := gorm.Open(dialector, newGORMConfig(cfg))
 	if err != nil {
 		return nil, err
 	}
@@ -72,13 +80,30 @@ func configureConnectionPool(db *gorm.DB, cfg config.Config) error {
 		return err
 	}
 
+	isSqlite := db.Dialector.Name() == "sqlite"
+
 	maxOpen := cfg.PostgresMaxOpenConns
-	if maxOpen <= 0 {
-		maxOpen = 30
+	if isSqlite {
+		maxOpen = cfg.SqliteMaxOpenConns
 	}
+	if maxOpen <= 0 {
+		if isSqlite {
+			maxOpen = 5
+		} else {
+			maxOpen = 30
+		}
+	}
+
 	maxIdle := cfg.PostgresMaxIdleConns
+	if isSqlite {
+		maxIdle = cfg.SqliteMaxIdleConns
+	}
 	if maxIdle <= 0 {
-		maxIdle = 10
+		if isSqlite {
+			maxIdle = 5
+		} else {
+			maxIdle = 10
+		}
 	}
 	if maxIdle > maxOpen {
 		maxIdle = maxOpen
@@ -87,11 +112,20 @@ func configureConnectionPool(db *gorm.DB, cfg config.Config) error {
 	sqlDB.SetMaxOpenConns(maxOpen)
 	sqlDB.SetMaxIdleConns(maxIdle)
 
-	if cfg.PostgresConnMaxLifetimeMin > 0 {
-		sqlDB.SetConnMaxLifetime(time.Duration(cfg.PostgresConnMaxLifetimeMin) * time.Minute)
+	lifetimeMin := cfg.PostgresConnMaxLifetimeMin
+	if isSqlite {
+		lifetimeMin = cfg.SqliteConnMaxLifetimeMin
 	}
-	if cfg.PostgresConnMaxIdleTimeMin > 0 {
-		sqlDB.SetConnMaxIdleTime(time.Duration(cfg.PostgresConnMaxIdleTimeMin) * time.Minute)
+	if lifetimeMin > 0 {
+		sqlDB.SetConnMaxLifetime(time.Duration(lifetimeMin) * time.Minute)
+	}
+
+	idleTimeMin := cfg.PostgresConnMaxIdleTimeMin
+	if isSqlite {
+		idleTimeMin = cfg.SqliteConnMaxIdleTimeMin
+	}
+	if idleTimeMin > 0 {
+		sqlDB.SetConnMaxIdleTime(time.Duration(idleTimeMin) * time.Minute)
 	}
 	return nil
 }
@@ -99,6 +133,10 @@ func configureConnectionPool(db *gorm.DB, cfg config.Config) error {
 func migrate(db *gorm.DB, cfg config.Config) error {
 	if err := applySchemaBaseline(db); err != nil {
 		return err
+	}
+
+	if db.Dialector.Name() == "sqlite" {
+		return nil
 	}
 
 	tableComments := map[string]string{

@@ -2110,6 +2110,9 @@ func (r *Repo) UpdateFileObjectChunkCount(ctx context.Context, fileObjID uint, c
 // CloneFileEmbeddingArtifacts 复用已完成 embedding 的文件分片到新的逻辑别名文件。
 // 若目标环境不支持 embedding 列复制，调用方应回退到重新异步 embedding。
 func (r *Repo) CloneFileEmbeddingArtifacts(ctx context.Context, source *domainconversation.FileObject, target *domainconversation.FileObject) error {
+	if r.db.Dialector.Name() == "sqlite" {
+		return nil
+	}
 	if source == nil || target == nil {
 		return nil
 	}
@@ -2144,6 +2147,9 @@ func (r *Repo) CloneFileEmbeddingArtifacts(ctx context.Context, source *domainco
 
 // ReplaceFileChunks 替换文件的所有分片（删除旧的，插入新的，并用 raw SQL 更新 embedding）。
 func (r *Repo) ReplaceFileChunks(ctx context.Context, fileObjID uint, chunks []domainconversation.FileChunk, embeddings [][]float32) error {
+	if r.db.Dialector.Name() == "sqlite" {
+		return nil
+	}
 	if len(chunks) != len(embeddings) {
 		return fmt.Errorf("embedding count mismatch: chunks=%d embeddings=%d", len(chunks), len(embeddings))
 	}
@@ -2244,6 +2250,9 @@ type fileChunkSearchRow struct {
 // SearchFileChunks 使用 pgvector 余弦距离检索最相关的文本分片（需 pgvector 扩展）。
 // 返回结果按相似度降序排列，已携带 Similarity 分数以供阈值过滤。
 func (r *Repo) SearchFileChunks(ctx context.Context, userID uint, fileObjIDs []uint, queryEmbedding []float32, topK int) ([]domainconversation.FileChunkSearchResult, error) {
+	if r.db.Dialector.Name() == "sqlite" {
+		return nil, nil
+	}
 	if len(fileObjIDs) == 0 || len(queryEmbedding) == 0 {
 		return nil, nil
 	}
@@ -2285,6 +2294,9 @@ func (r *Repo) SearchFileChunks(ctx context.Context, userID uint, fileObjIDs []u
 // BM25SearchFileChunks 使用 PostgreSQL tsvector 全文检索文件分片，中文字符以空格切字作为后备分词策略。
 // 返回结果按 ts_rank 降序，Similarity 字段存放归一化后的排名得分（0-1）。
 func (r *Repo) BM25SearchFileChunks(ctx context.Context, userID uint, fileObjIDs []uint, query string, topK int) ([]domainconversation.FileChunkSearchResult, error) {
+	if r.db.Dialector.Name() == "sqlite" {
+		return nil, nil
+	}
 	if len(fileObjIDs) == 0 || strings.TrimSpace(query) == "" {
 		return nil, nil
 	}
@@ -3180,6 +3192,9 @@ func fileObjectProcessingStateUpdates(item *domainconversation.FileObjectProcess
 // ── MessageEmbeddingRepository ─────────────────────────────────────────────
 
 func (r *Repo) VectorStoreAvailable(ctx context.Context) (bool, error) {
+	if r.db.Dialector.Name() == "sqlite" {
+		return false, nil
+	}
 	checks := []string{
 		`SELECT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'vector')`,
 		`SELECT EXISTS (
@@ -3221,6 +3236,9 @@ func (r *Repo) VectorStoreAvailable(ctx context.Context) (bool, error) {
 
 // UpsertMessageChunks 为指定消息写入向量分片（先删旧后插新，再写 embedding）。
 func (r *Repo) UpsertMessageChunks(ctx context.Context, chunks []domainconversation.MessageChunk, embeddings [][]float32) error {
+	if r.db.Dialector.Name() == "sqlite" {
+		return nil
+	}
 	if len(chunks) == 0 {
 		return nil
 	}
@@ -3282,6 +3300,9 @@ type messageChunkSearchRow struct {
 
 // SearchMessageChunks 按查询向量检索最相关的历史消息分片。
 func (r *Repo) SearchMessageChunks(ctx context.Context, conversationID uint, userID uint, queryEmbedding []float32, topK int, minSimilarity float64) ([]domainconversation.MessageChunk, error) {
+	if r.db.Dialector.Name() == "sqlite" {
+		return nil, nil
+	}
 	if len(queryEmbedding) == 0 || topK <= 0 {
 		return nil, nil
 	}

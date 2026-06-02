@@ -119,6 +119,9 @@ type userMemorySearchRow struct {
 
 // SearchUserMemoriesByEmbedding 按查询向量语义检索最相关的用户记忆（需 pgvector 支持）。
 func (r *Repo) SearchUserMemoriesByEmbedding(ctx context.Context, userID uint, queryEmbedding []float32, topK int, minSimilarity float64) ([]domainmemory.UserMemory, error) {
+	if r.db.Dialector.Name() == "sqlite" {
+		return nil, nil
+	}
 	if len(queryEmbedding) == 0 || topK <= 0 {
 		return nil, nil
 	}
@@ -153,6 +156,9 @@ func (r *Repo) SearchUserMemoriesByEmbedding(ctx context.Context, userID uint, q
 
 // UpsertUserMemoryEmbedding 更新指定记忆条目的向量（异步写入，失败静默）。
 func (r *Repo) UpsertUserMemoryEmbedding(ctx context.Context, userID uint, memoryKey string, expectedValue string, embedding []float32) error {
+	if r.db.Dialector.Name() == "sqlite" {
+		return nil
+	}
 	if len(embedding) == 0 {
 		return nil
 	}

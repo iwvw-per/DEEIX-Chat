@@ -14,7 +14,7 @@ import (
 const gormTraceSpanKey = "deeix-chat:postgres-trace-span"
 
 func configureTracing(db *gorm.DB, cfg config.Config) error {
-	attrs := postgresTraceAttributes(cfg)
+	attrs := postgresTraceAttributes(db, cfg)
 	registrations := []error{
 		db.Callback().Create().Before("gorm:create").Register("deeix-chat:trace-before-create", beginGORMTrace("create", attrs)),
 		db.Callback().Create().After("gorm:create").Register("deeix-chat:trace-after-create", endGORMTrace),
@@ -42,6 +42,10 @@ func beginGORMTrace(operation string, baseAttrs []attribute.KeyValue) func(*gorm
 		if tx == nil || tx.Statement == nil {
 			return
 		}
+		dbSystem := "db.postgresql"
+		if tx.Dialector.Name() == "sqlite" {
+			dbSystem = "db.sqlite"
+		}
 		attrs := make([]attribute.KeyValue, 0, len(baseAttrs)+3)
 		attrs = append(attrs, baseAttrs...)
 		attrs = append(attrs, attribute.String("db.operation", operation))
@@ -50,7 +54,7 @@ func beginGORMTrace(operation string, baseAttrs []attribute.KeyValue) func(*gorm
 		}
 		ctx, span := platformtracing.Start(
 			tx.Statement.Context,
-			"db.postgresql."+operation,
+			dbSystem+"."+operation,
 			trace.WithSpanKind(trace.SpanKindClient),
 			trace.WithAttributes(attrs...),
 		)
@@ -78,7 +82,15 @@ func endGORMTrace(tx *gorm.DB) {
 	span.End()
 }
 
-func postgresTraceAttributes(cfg config.Config) []attribute.KeyValue {
+func postgresTraceAttributes(db *gorm.DB, cfg config.Config) []attribute.KeyValue {
+	isSqlite := db.Dialector.Name() == "sqlite"
+	if isSqlite {
+		return []attribute.KeyValue{
+			attribute.String("db.system", "sqlite"),
+			attribute.String("db.name", cfg.SqliteDSN),
+		}
+	}
+
 	attrs := []attribute.KeyValue{
 		attribute.String("db.system", "PostgreSQL"),
 	}

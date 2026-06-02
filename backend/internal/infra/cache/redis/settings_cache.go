@@ -23,12 +23,18 @@ func NewSettingsCache(client *redis.Client) repository.SettingsCacheRepository {
 
 // Set 将 namespace/key 配置值写入 Redis，TTL 固定 60 秒。
 func (s *settingsCache) Set(ctx context.Context, namespace, key, value string) error {
+	if s == nil || s.client == nil {
+		return nil
+	}
 	cacheKey := s.buildKey(namespace, key)
 	return s.client.Set(ctx, cacheKey, value, settingsCacheTTL).Err()
 }
 
 // Del 删除 namespace/key 对应的 Redis 缓存项。
 func (s *settingsCache) Del(ctx context.Context, namespace, key string) error {
+	if s == nil || s.client == nil {
+		return nil
+	}
 	cacheKey := s.buildKey(namespace, key)
 	return s.client.Del(ctx, cacheKey).Err()
 }

@@ -1,0 +1,28 @@
+name: deeix-chat-sqlite
+
+services:
+  app:
+    image: ${DEEIX_CHAT_IMAGE:-ghcr.io/deeix-ai/deeix-chat:latest}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: deeix-chat-app
+    ports:
+      - "8080:8080"
+    volumes:
+      - app_storage:/app/storage
+    environment:
+      # 指定数据库类型为 sqlite
+      - DATABASE_TYPE=sqlite
+      # 容器卷挂载持久化路径下的数据库文件
+      - SQLITE_DSN=/app/storage/deeix_chat.db
+      # 禁用 Redis（填入 none/disabled 或留空，系统会自动退避降级）
+      - REDIS_ADDR=none
+      # 生产部署必须替换的密钥
+      - JWT_SECRET=change-me-to-a-strong-random-jwt-secret
+      - DATA_ENCRYPTION_KEY=change-me-to-a-strong-data-encryption-key-32-bytes
+      - APP_ENV=prod
+
+volumes:
+  app_storage:
+    name: deeix-chat-app-storage

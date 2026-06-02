@@ -6,83 +6,83 @@
 </p>
 
 <p align="center">
-  An enterprise AI workspace for model routing, multimodal chat, files, tools, billing, identity, and operations.
+  面向企业模型路由、多模态对话、文件、工具、计费、身份和运维的一体化 AI 工作台。
 </p>
 
 <p align="center">
-  English | <a href="./README.zh-CN.md">简体中文</a>
+  <a href="./README.en.md">English</a> | 简体中文
 </p>
 
 <p align="center">
-  <a href="https://deeix.com"><img alt="Website" src="https://img.shields.io/badge/Website-deeix.com-black" /></a>
-  <a href="https://www.apache.org/licenses/LICENSE-2.0"><img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-blue" /></a>
+  <a href="https://deeix.com"><img alt="官网" src="https://img.shields.io/badge/官网-deeix.com-black" /></a>
+  <a href="https://www.apache.org/licenses/LICENSE-2.0"><img alt="开源协议" src="https://img.shields.io/badge/License-Apache%202.0-blue" /></a>
   <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16-black" />
   <img alt="React" src="https://img.shields.io/badge/React-19-149eca" />
   <img alt="Go" src="https://img.shields.io/badge/Go-1.25-00add8" />
 </p>
 
-## Overview
+## 项目简介
 
-DEEIX Chat gives teams a unified workspace for working with multiple AI models and providers. It combines multimodal chat, model routing, file and RAG workflows, MCP tools, usage billing, identity, audit logs, and operational controls in one product.
+DEEIX Chat 为团队提供统一的 AI 工作台，用一个清晰的使用入口承载多个上游模型和服务商。它将多模态对话、模型路由、文件与 RAG、MCP 工具、用量计费、身份认证、审计日志和运维控制整合到同一个产品中。
 
-The architecture is designed for simple deployment, efficient static delivery, and a predictable Go runtime footprint. The admin console centralizes upstream channels, platform model names, routing priority, pricing, subscriptions, users, and security policies, while the conversation workspace keeps the user experience stable and focused.
+系统围绕简单部署、高效静态分发和可预期的 Go 运行时占用设计。后台集中管理上游渠道、平台模型名、路由优先级、定价、订阅、用户和安全策略，对话工作区则保持稳定、专注的用户体验。
 
-![DEEIX Chat workspace](./frontend/public/DEEIX-Chat.jpg)
+![DEEIX Chat 工作区](./frontend/public/DEEIX-Chat.jpg)
 
-## Features
+## 核心能力
 
-| Area | Capabilities |
+| 模块 | 能力 |
 | --- | --- |
-| Conversations | Multi-branch chat, streaming, retries, edits, feedback, sharing, cloned shared conversations, rich markdown rendering, file cards, model metadata, usage details, and execution traces. |
-| Media generation | Dedicated image generation and image edit flow with task-aware routing, provider-native OpenAI, Google, and xAI image protocols, generated file storage, preview, download, and run history separated from text chat. |
-| Model control plane | Platform model catalog, upstream channels, real upstream models, route bindings, priority and weight routing, model capability JSON, display ordering, vendor mapping, automatic icons, and circuit breaker state. |
-| Provider protocols | OpenAI Responses, Chat Completions, Images Generations, and Images Edits; Anthropic Messages; Google/Gemini Generate Content and Image Generation; xAI Responses, Images Generations, and Images Edits; OpenRouter defaults; and custom OpenAI-compatible routes. |
-| Request governance | Protocol-aware request assembly, user option allowlists and denylists, system-protected fields, previous-response continuation where supported, and context snapshots for review. |
-| Files and RAG | File upload, preview, download, deletion, quota control, MIME detection, text extraction, OCR, full-context injection, image context, chunking, embeddings, and semantic retrieval. |
-| Memory and context | Message-window truncation, token-budget truncation, context compression, conversation memory, long-term user memory, RAG evidence records, and prompt trace inspection. |
-| Tools | Admin-managed MCP servers, tool discovery, per-tool enablement, user-side tool selection, execution limits, retries, trace rendering, and tool result handling. |
-| Billing and payments | Subscription plans, top-ups, balances, token/call/duration/tiered model pricing, free models, prepaid thresholds, usage ledgers, billing snapshots, Stripe Checkout, EPay, and webhook validation. |
-| Identity and security | Local login, registration, session management, HttpOnly refresh cookies, 2FA/TOTP, recovery codes, trusted devices, SSO/OIDC/OAuth providers, contact verification, timezone, and locale. |
-| Administration | Users, roles, auth providers, upstreams, platform models, route bindings, model pricing, subscriptions, balances, usage logs, audit logs, auth events, system events, and runtime settings. |
-| Operations | Efficient static delivery, predictable Go runtime footprint, Docker builds, single-runtime frontend/API serving, Swagger docs, structured logs, request IDs, Redis caching, PostgreSQL pgvector, optional GeoIP, optional OpenTelemetry, and S3-compatible storage. |
+| 对话体验 | 多分支会话、流式响应、重试、编辑、反馈、公开分享、克隆分享会话、富文本 Markdown、文件卡片、模型元信息、用量明细和执行链路。 |
+| 媒体生成 | 独立的图片生成和图片编辑链路，按任务类型路由到 OpenAI、Google 和 xAI 的原生图片协议，生成结果统一入库为文件，支持预览、下载和独立运行记录。 |
+| 模型控制面 | 平台模型目录、上游渠道、真实上游模型、路由绑定、优先级/权重路由、能力 JSON、展示顺序、厂商映射、自动图标和熔断状态。 |
+| 协议适配 | OpenAI Responses、Chat Completions、Images Generations 和 Images Edits，Anthropic Messages，Google/Gemini Generate Content 和 Image Generation，xAI Responses、Images Generations 和 Images Edits，OpenRouter 默认协议和自定义 OpenAI 兼容路由。 |
+| 请求治理 | 按协议组装上游请求，支持用户参数白名单/黑名单、系统保护字段、协议支持时的 previous response 续接，以及可回看的上下文快照。 |
+| 文件与 RAG | 文件上传、预览、下载、删除、配额控制、MIME 探测、文本提取、OCR、全文上下文注入、图片上下文、分片、向量嵌入和语义检索。 |
+| 记忆与上下文 | 消息数截断、Token 预算截断、上下文压缩、会话记忆、用户长期记忆、RAG 证据记录和提示词链路查看。 |
+| 工具调用 | 后台管理 MCP Server、工具发现、工具启停、用户侧工具选择、执行轮数限制、重试、链路渲染和工具结果处理。 |
+| 计费与支付 | 订阅套餐、充值、余额账户、按 Token/按次/按秒/阶梯定价、免费模型、预付费阈值、用量账本、计费快照、Stripe Checkout、易支付和 Webhook 校验。 |
+| 身份与安全 | 本地登录、注册、会话管理、HttpOnly Refresh Cookie、2FA/TOTP、恢复码、可信设备、SSO/OIDC/OAuth 身份源、联系方式验证、时区和语言区域。 |
+| 后台管理 | 用户、角色、身份源、上游、平台模型、路由绑定、模型定价、订阅、余额、调用日志、审计日志、认证事件、系统事件和运行时设置。 |
+| 运维能力 | 高效静态分发、可预期的 Go 运行时占用、Docker 构建、单运行时托管前端和 API、Swagger、结构化日志、请求 ID、Redis 缓存、PostgreSQL pgvector、可选 GeoIP、可选 OpenTelemetry 和 S3 兼容存储。 |
 
 <p>
-  <img src="./frontend/public/DEEIX-Chat-Image.png" alt="DEEIX Chat image generation" width="32%" />
-  <img src="./frontend/public/DEEIX-Chat-Dark.png" alt="DEEIX Chat dark mode" width="32%" />
-  <img src="./frontend/public/DEEIX-Chat-Usage.png" alt="DEEIX Chat usage and billing" width="32%" />
+  <img src="./frontend/public/DEEIX-Chat-Image.png" alt="DEEIX Chat 图片生成" width="32%" />
+  <img src="./frontend/public/DEEIX-Chat-Dark.png" alt="DEEIX Chat 深色模式" width="32%" />
+  <img src="./frontend/public/DEEIX-Chat-Usage.png" alt="DEEIX Chat 用量与计费" width="32%" />
 </p>
 
-## Architecture
+## 架构
 
 ```text
-frontend/  Next.js App Router web application
-backend/   Go API service, domain/application layers, infra adapters, Swagger docs
-docker/    Optional document extraction and OCR services
+frontend/  Next.js App Router 前端应用
+backend/   Go API 服务、领域/应用层、基础设施适配和 Swagger 文档
+docker/    可选文档提取和 OCR 服务
 ```
 
-Backend code follows a layered structure:
+后端按分层结构组织：
 
 ```text
 cmd -> internal/cli -> internal/app
 transport/http -> application -> repository interfaces -> infra implementations
-domain -> shared domain types and constants
-pkg -> dependency-free technical helpers
+domain -> 领域类型和常量
+pkg -> 无业务依赖的技术工具
 ```
 
-The database uses domain-prefixed tables for identity, LLM routing, billing, conversations, files, RAG, settings, tools, audit logs, and system events. Financial records, audit trails, system events, and high-growth vector data are kept as separate sources of truth.
+数据库使用领域前缀组织身份、模型路由、计费、对话、文件、RAG、设置、工具、审计日志和系统事件等表。财务流水、审计日志、系统事件和高增长向量数据保持独立事实源。
 
-## Tech Stack
+## 技术栈
 
-- Frontend: Next.js 16, React 19, TypeScript, Tailwind CSS, shadcn/ui-style components, Radix/Base UI, Streamdown, KaTeX, Mermaid, Recharts, Motion
-- Backend: Go 1.25, Gin, Gorm, PostgreSQL, pgvector, Redis, Swagger, OpenTelemetry, Zap
-- Storage: local filesystem or S3-compatible object storage
-- File processing: built-in extractors, Apache Tika, Docling, RapidOCR, Tesseract OCR, Paddle OCR, cloud OCR adapters, MinerU, and LLM OCR fallback
-- Tooling: MCP Streamable HTTP JSON-RPC
-- Runtime: Docker, Docker Compose, PostgreSQL, Redis
+- 前端：Next.js 16、React 19、TypeScript、Tailwind CSS、shadcn/ui 风格组件、Radix/Base UI、Streamdown、KaTeX、Mermaid、Recharts、Motion
+- 后端：Go 1.25、Gin、Gorm、PostgreSQL、pgvector、Redis、Swagger、OpenTelemetry、Zap
+- 存储：本地文件系统或 S3 兼容对象存储
+- 文件处理：内置提取、Apache Tika、Docling、RapidOCR、Tesseract OCR、Paddle OCR、云 OCR 适配、MinerU、LLM OCR 回退
+- 工具协议：MCP Streamable HTTP JSON-RPC
+- 运行依赖：Docker、Docker Compose、PostgreSQL、Redis
 
-## Quick Start
+## 快速开始
 
-### Local Development
+### 本地开发
 
 ```bash
 cp config.example.yaml config.yaml
@@ -97,96 +97,96 @@ cp .env.example .env.local
 pnpm dev
 ```
 
-URLs: frontend `http://localhost:3000`, API `http://localhost:8080`, Swagger `http://localhost:8080/swagger/index.html`.
+地址：前端 `http://localhost:3000`，API `http://localhost:8080`，Swagger `http://localhost:8080/swagger/index.html`。
 
-The frontend uses `NEXT_PUBLIC_API_BASE_URL` for API requests. For local development, set it in `frontend/.env.local`:
+前端请求后端使用 `NEXT_PUBLIC_API_BASE_URL`。本地开发可写入 `frontend/.env.local`：
 
 ```env
 NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8080
 ```
 
-If omitted, local development defaults to `localhost:8080`; same-origin deployments use the current origin.
+不配置时，本地默认指向 `localhost:8080`；同源部署默认请求当前 origin。
 
-### Docker Deployment
+### Docker 部署
 
-Priority: `environment variables > config.yaml > built-in defaults`.
+优先级：`环境变量 > config.yaml > 代码内置默认值`。
 
-The Docker image runs from `/app`. With the default compose mount below, the backend reads `/app/config.yaml` automatically:
+Docker 镜像工作目录是 `/app`。使用默认 compose 挂载时，后端会自动读取 `/app/config.yaml`：
 
 ```yaml
 volumes:
   - ./config.yaml:/app/config.yaml:ro
 ```
 
-To use a different file path, set `CONFIG_FILE` to the container path:
+如果需要指定其他配置文件路径，使用 `CONFIG_FILE`，值必须是容器内路径：
 
 ```yaml
 environment:
   CONFIG_FILE: "/app/config.yaml"
 ```
 
-Custom config file paths are read from `CONFIG_FILE`. If both compose environment variables and `config.yaml` define the same key, the environment variable wins. In `docker-compose.full.yml`, `POSTGRES_DSN`, `REDIS_ADDR`, and `REDIS_PASSWORD` are set in `environment`, so they override the PostgreSQL and Redis values in `config.yaml`.
+自定义配置文件路径只读取 `CONFIG_FILE`。如果 compose 的 `environment` 和 `config.yaml` 同时配置同一个键，环境变量优先。`docker-compose.full.yml` 默认在 `environment` 中写入了 `POSTGRES_DSN`、`REDIS_ADDR`、`REDIS_PASSWORD`，因此会覆盖 `config.yaml` 中的 PostgreSQL 和 Redis 配置。
 
-`config.yaml` is for static infrastructure and security configuration such as server URLs, database, Redis, storage, GeoIP, tracing, JWT, and encryption keys. Runtime business settings are stored in the database and managed in the admin console, so changing those values in YAML after startup is not the source of truth.
+`config.yaml` 只负责静态基础设施和安全配置，例如服务地址、数据库、Redis、存储、GeoIP、Trace、JWT 和加密密钥。运行时业务配置存储在数据库中，并通过后台管理修改；这些配置启动后不以 YAML 为准。
 
-`APP_ENV` accepts `dev`/`development` and `prod`/`production`, normalizes them to `dev` or `prod`, and defaults to `prod` when omitted. Use `dev` only for local development. Public production deployments should keep `APP_ENV=prod` or `APP_ENV=production` and use production secrets.
+`APP_ENV` 支持 `dev`/`development` 和 `prod`/`production`，内部会规范化为 `dev` 或 `prod`；未配置时默认 `prod`。`dev` 只用于本地开发；公网生产部署应保持 `APP_ENV=prod` 或 `APP_ENV=production` 并使用生产密钥。
 
-#### Lightweight Start
+#### 轻量启动
 
-Starts only the `app` container. PostgreSQL and Redis must be provided externally. Use this when database and cache services already exist.
+只启动 `app` 容器，PostgreSQL 和 Redis 使用外部服务。适合已有数据库/缓存的部署环境。
 
 ```bash
 cp config.docker.example.yaml config.yaml
-# Edit database.postgres.dsn and database.redis.*.
+# 修改 database.postgres.dsn 和 database.redis.*
 docker compose up -d
 ```
 
-This mode primarily uses `config.yaml`; keep compose `environment` empty unless you intentionally want an environment variable to override the file.
+这种方式主要使用 `config.yaml`。除非明确希望用环境变量覆盖配置文件，否则 compose 中不需要额外写同名 `environment`。
 
-#### Full Stack Start
+#### 全量启动
 
-Starts `app`, `postgres`, and `redis`. Use this for local evaluation, development smoke tests, or single-machine deployments without external services.
+启动 `app`、`postgres`、`redis` 三个容器。适合本机试用、开发自测或无外部数据库的单机部署。
 
 ```bash
 cp config.docker.example.yaml config.yaml
 docker compose -f docker-compose.full.yml up -d
 ```
 
-This mode uses compose environment variables for the bundled PostgreSQL and Redis services. Edit `docker-compose.full.yml` or remove those environment entries if you want `config.yaml` to provide these connection values instead.
+这种方式会通过 compose 环境变量连接内置 PostgreSQL 和 Redis。如果希望这些连接配置完全来自 `config.yaml`，需要修改 `docker-compose.full.yml` 或删除对应 `environment` 项。
 
-The default application image is `ghcr.io/deeix-ai/deeix-chat:latest`. Override it with `DEEIX_CHAT_IMAGE` when testing a custom build:
+默认应用镜像为 `ghcr.io/deeix-ai/deeix-chat:latest`。测试自定义构建时可通过 `DEEIX_CHAT_IMAGE` 覆盖：
 
 ```bash
 DEEIX_CHAT_IMAGE=deeix-chat:local docker compose up -d --build
 ```
 
-Docker URL: `http://localhost:8080`. Keep the Docker `server` section unchanged unless changing ports or public domains; then update compose ports, public URLs, and CORS together.
+Docker 地址：`http://localhost:8080`。除非修改端口或公网域名，否则不要改 Docker 配置里的 `server` 段；如需修改，端口映射、公开 URL 和 CORS 必须一起调整。
 
-For troubleshooting, inspect startup logs and verify that the mounted file exists inside the container:
+排查配置是否挂载成功时，可检查容器内文件和启动日志：
 
 ```bash
 docker compose exec app ls -l /app/config.yaml
 docker compose logs app
 ```
 
-#### Separated Deployment
+#### 分离部署
 
-Use this mode when the frontend and backend are served from different public origins, for example `https://chat.example.com` and `https://api.example.com`.
+当前端和后端分别暴露在不同公网地址时使用分离部署，例如 `https://chat.example.com` 和 `https://api.example.com`。
 
-1. Configure public URLs.
+1. 配置公开地址。
 
-   - Frontend build variable: `NEXT_PUBLIC_API_BASE_URL=https://api.example.com`
-   - Backend config: `server.public_api_base_url=https://api.example.com`
-   - Backend config: `server.public_web_base_url=https://chat.example.com`
-   - Backend config: `server.cors_allow_origin=https://chat.example.com`
+   - 前端构建变量：`NEXT_PUBLIC_API_BASE_URL=https://api.example.com`
+   - 后端配置：`server.public_api_base_url=https://api.example.com`
+   - 后端配置：`server.public_web_base_url=https://chat.example.com`
+   - 后端配置：`server.cors_allow_origin=https://chat.example.com`
 
-   For Docker image builds, pass the frontend API URL at build time:
+   Docker 镜像构建时需要传入前端 API 地址：
 
    ```bash
    docker build --build-arg NEXT_PUBLIC_API_BASE_URL=https://api.example.com -t deeix-chat .
    ```
 
-2. Build and publish the frontend.
+2. 构建并发布前端。
 
    ```bash
    cd frontend
@@ -194,41 +194,41 @@ Use this mode when the frontend and backend are served from different public ori
    NEXT_PUBLIC_API_BASE_URL=https://api.example.com pnpm build
    ```
 
-   The static output is `frontend/out`. Serve it with Nginx, CDN, object storage, or any static web server. To let the Go backend serve the frontend, place `frontend/out` under `server.frontend_dist_dir`; the Docker image defaults to `/app/frontend/out`.
+   静态产物在 `frontend/out`，可由 Nginx、CDN、对象存储或任意静态服务托管。如需由 Go 后端托管前端，把 `frontend/out` 放到 `server.frontend_dist_dir` 指向的目录；Docker 镜像默认是 `/app/frontend/out`。
 
-3. Apply CDN rules.
+3. 配置 CDN 规则。
 
-   | Path | Rule |
+   | 路径 | 规则 |
    | --- | --- |
-   | `/_next/static/*` | Cache for 1 year with immutable assets enabled. |
-   | `/logo*.svg`, `/*.ico`, `/*.png`, `/*.jpg`, `/*.webp`, `/*.woff2` | Cache for 1 day to 30 days. |
-   | `/`, `/*.html`, `/chat*`, `/recent*`, `/files*`, `/setting*`, `/admin*`, `/share*` | Do not long-cache. Use `no-cache` or a short TTL. |
-   | `/api/*`, `/healthz`, `/readyz`, `/swagger/*` | Bypass CDN cache and forward all request headers, methods, query strings, and request bodies. |
+   | `/_next/static/*` | 缓存 1 年，并启用 immutable 静态资源缓存。 |
+   | `/logo*.svg`、`/*.ico`、`/*.png`、`/*.jpg`、`/*.webp`、`/*.woff2` | 缓存 1 天到 30 天。 |
+   | `/`、`/*.html`、`/chat*`、`/recent*`、`/files*`、`/setting*`、`/admin*`、`/share*` | 不做长期缓存，建议使用 `no-cache` 或较短 TTL。 |
+   | `/api/*`、`/healthz`、`/readyz`、`/swagger/*` | 绕过 CDN 缓存，并完整转发请求头、方法、查询参数和请求体。 |
 
-   If the CDN serves `frontend/out` from object storage, enable route fallback so clean URLs resolve to their exported `index.html` files, for example `/chat` -> `/chat/index.html`.
+   如果 CDN 从对象存储托管 `frontend/out`，需要开启路由回退，让无扩展名地址能命中导出的 `index.html`，例如 `/chat` -> `/chat/index.html`。
 
-4. Configure Stripe Webhook if Stripe is enabled.
+4. 如果启用 Stripe，配置 Stripe Webhook。
 
-   Add this endpoint in Stripe Dashboard:
+   在 Stripe Dashboard 添加此 Endpoint：
 
    ```text
    https://api.example.com/api/v1/billing/payments/stripe/webhook
    ```
 
-   Enable the `checkout.session.completed` event and paste the generated `whsec_...` signing secret into Admin -> Billing -> Payment settings -> Stripe Webhook Secret. This endpoint must bypass CDN cache and preserve the raw request body plus the `Stripe-Signature` header.
+   启用 `checkout.session.completed` 事件，并将 Stripe 生成的 `whsec_...` 签名密钥填入后台「计费 -> 支付配置 -> Stripe Webhook Secret」。该 Endpoint 必须绕过 CDN 缓存，并保留原始请求体和 `Stripe-Signature` 请求头。
 
-## Main Routes
+## 主要路由
 
-- `/chat` - conversation workspace
-- `/share` - public conversation snapshot page
-- `/recent` - recent conversations, share status, starred and archived states
-- `/files` - file manager
-- `/setting` - user account, subscription, preferences, security settings, and product information
-- `/admin` - administration console
+- `/chat`：对话工作区
+- `/share`：公开会话快照页面
+- `/recent`：最近会话、分享状态、星标和归档状态
+- `/files`：文件管理
+- `/setting`：用户账户、订阅、偏好、安全设置和产品信息
+- `/admin`：后台管理
 
-## Common Commands
+## 常用命令
 
-Backend:
+后端：
 
 ```bash
 cd backend
@@ -238,7 +238,7 @@ go vet ./...
 make swagger
 ```
 
-Frontend:
+前端：
 
 ```bash
 cd frontend
@@ -246,102 +246,102 @@ pnpm lint
 pnpm build
 ```
 
-## Configuration
+## 配置说明
 
-Static infrastructure configuration is loaded from the repository-level `config.yaml` and can be overridden by environment variables. Runtime business settings are stored in `system_settings` and managed from the admin console.
+静态基础设施配置从仓库根目录的 `config.yaml` 读取，并支持环境变量覆盖。运行时业务配置存储在 `system_settings`，由后台管理。
 
-Docker deployments read `/app/config.yaml` by default when `./config.yaml` is mounted to `/app/config.yaml`. `CONFIG_FILE` can point to another container path.
+Docker 部署默认通过 `./config.yaml:/app/config.yaml:ro` 挂载并读取 `/app/config.yaml`。如需自定义路径，使用 `CONFIG_FILE` 指向容器内路径。
 
-Frontend build-time variables:
+前端构建期变量：
 
-| Variable | Purpose |
+| 变量 | 作用 |
 | --- | --- |
-| `NEXT_PUBLIC_API_BASE_URL` | Browser API base URL; set in `frontend/.env.local` for local dev or at build time for separated deployment. |
+| `NEXT_PUBLIC_API_BASE_URL` | 浏览器请求后端 API 的地址；本地写入 `frontend/.env.local`，分离部署在构建时传入。 |
 
-Common backend environment variables:
+常用后端环境变量：
 
-| Variable | Purpose |
+| 变量 | 作用 |
 | --- | --- |
-| `APP_ENV` | Runtime environment. Accepts `dev`/`development` and `prod`/`production`; omitted values default to `prod`. |
-| `CONFIG_FILE` | Optional custom config file path inside the running process or container. Docker defaults to `/app/config.yaml` through the working directory and compose mount. |
-| `HTTP_PORT` | API/runtime port. |
-| `JWT_SECRET` | JWT signing secret. Must be strong in production. |
-| `DATA_ENCRYPTION_KEY` | Key material for encrypted secrets such as upstream API keys, SSO client secrets, MCP tokens, and TOTP secrets. |
-| `POSTGRES_DSN` | PostgreSQL DSN. |
-| `REDIS_ADDR`, `REDIS_PASSWORD`, `REDIS_DB` | Redis connection settings. |
-| `STORAGE_BACKEND` | `local` or `s3`. |
-| `STORAGE_ROOT_DIR` | Local storage root. |
-| `STORAGE_S3_ENDPOINT`, `STORAGE_S3_REGION`, `STORAGE_S3_BUCKET`, `STORAGE_S3_PREFIX`, `STORAGE_S3_ACCESS_KEY_ID`, `STORAGE_S3_SECRET_ACCESS_KEY` | S3-compatible storage settings. |
-| `PUBLIC_API_BASE_URL`, `PUBLIC_WEB_BASE_URL` | Public URLs used for links and callbacks. |
-| `GEOIP_PROVIDER` | GeoIP provider. The default `ipwhois` uses the built-in public endpoint. |
-| `OTEL_ENABLED`, `OTEL_EXPORTER_OTLP_ENDPOINT`, `OTEL_EXPORTER_OTLP_HEADERS`, `OTEL_EXPORTER_OTLP_INSECURE`, `OTEL_TRACES_SAMPLER_ARG`, `OTEL_SAMPLING_RATE` | OpenTelemetry tracing settings. |
+| `APP_ENV` | 运行环境。支持 `dev`/`development` 和 `prod`/`production`；未配置时默认 `prod`。 |
+| `CONFIG_FILE` | 可选的配置文件路径，Docker 场景应填写容器内路径；默认 compose 挂载后会读取 `/app/config.yaml`。 |
+| `HTTP_PORT` | API/运行时端口。 |
+| `JWT_SECRET` | JWT 签名密钥，生产环境必须使用强随机值。 |
+| `DATA_ENCRYPTION_KEY` | 上游 API Key、SSO Client Secret、MCP Token、敏感设置和 TOTP Secret 的加密密钥材料。 |
+| `POSTGRES_DSN` | PostgreSQL DSN。 |
+| `REDIS_ADDR`, `REDIS_PASSWORD`, `REDIS_DB` | Redis 连接配置。 |
+| `STORAGE_BACKEND` | `local` 或 `s3`。 |
+| `STORAGE_ROOT_DIR` | 本地存储目录。 |
+| `STORAGE_S3_ENDPOINT`, `STORAGE_S3_REGION`, `STORAGE_S3_BUCKET`, `STORAGE_S3_PREFIX`, `STORAGE_S3_ACCESS_KEY_ID`, `STORAGE_S3_SECRET_ACCESS_KEY` | S3 兼容对象存储配置。 |
+| `PUBLIC_API_BASE_URL`, `PUBLIC_WEB_BASE_URL` | 用于链接、回调和公开地址生成的外部访问地址。 |
+| `GEOIP_PROVIDER` | GeoIP 服务。默认 `ipwhois` 使用内置公共地址。 |
+| `OTEL_ENABLED`, `OTEL_EXPORTER_OTLP_ENDPOINT`, `OTEL_EXPORTER_OTLP_HEADERS`, `OTEL_EXPORTER_OTLP_INSECURE`, `OTEL_TRACES_SAMPLER_ARG`, `OTEL_SAMPLING_RATE` | OpenTelemetry Trace 配置。 |
 
-Production mode rejects unsafe default secrets, weak encryption keys, wildcard CORS, and non-HTTPS public URLs.
+生产模式会拒绝不安全的默认密钥、过短的加密密钥、通配 CORS 和非 HTTPS 公开地址。
 
-The initial superadmin username is `admin`. When the database has no superadmin account, the backend generates a random password and prints it once in the startup logs while creating the account. The first login forces changing the username and password; later changes are managed from the account flow, not from `config.yaml`.
+初始化超级管理员用户名固定为 `admin`，密码会在数据库中不存在超级管理员时随机生成，并只在首次创建账号的后端启动日志中输出一次。首次登录会强制修改用户名和密码；后续账号变更通过账户流程完成，不再通过 `config.yaml` 修改。
 
-To retrieve the initial admin password, inspect the backend logs from the first startup and search for `bootstrap superadmin created`; the `username` and `password` fields are the initial login credentials. If a superadmin already exists in the database, the service does not regenerate or print this password again.
+获取初始化管理员密码时，请查看首次启动后端服务的日志，搜索 `bootstrap superadmin created`；其中的 `username` 和 `password` 分别是初始登录用户名和密码。如果数据库中已经存在超级管理员，服务不会重新生成或再次输出该密码。
 
-## Security Notes
+## 安全说明
 
-- User passwords are hashed with bcrypt.
-- Refresh tokens and recovery-style secrets are stored as hashes.
-- Upstream API keys, SSO client secrets, MCP auth tokens, sensitive settings, and TOTP secrets are encrypted with AES-GCM using `DATA_ENCRYPTION_KEY`.
-- Access tokens are short-lived and held client-side in memory; refresh tokens are issued through HttpOnly cookies.
-- User-supplied model options are filtered before provider requests. System-generated fields such as model, messages, tools, system prompts, headers, and previous-response identifiers are not user-overridable.
+- 用户密码使用 bcrypt 哈希存储。
+- Refresh Token 和恢复类凭证只存储哈希。
+- 上游 API Key、SSO Client Secret、MCP 鉴权 Token、敏感系统设置和 TOTP Secret 使用 `DATA_ENCRYPTION_KEY` 通过 AES-GCM 加密。
+- Access Token 为短期令牌并保存在前端内存中；Refresh Token 由后端写入 HttpOnly Cookie。
+- 用户输入的模型参数会在请求上游前经过白名单/黑名单过滤。模型名、消息、工具、系统提示词、请求头和 previous response 标识等系统链路字段不允许被用户 options 覆盖。
 
-## Optional Services
+## 可选服务
 
-The compose files below attach to `deeix-chat-network`. Create it with `docker network create deeix-chat-network`, or start the root compose stack once before launching these services.
+下面的 compose 文件会接入 `deeix-chat-network`。可先执行 `docker network create deeix-chat-network`，或先启动一次根目录 compose。
 
-Apache Tika:
+Apache Tika：
 
 ```bash
 docker compose -f docker/tika/docker-compose.yml up -d
 ```
 
-Tesseract OCR:
+Tesseract OCR：
 
 ```bash
 docker compose -f docker/tesseract/docker-compose.yml up -d --build
 ```
 
-Docling:
+Docling：
 
 ```bash
 docker compose -f docker/docling/docker-compose.yml up -d --build
 ```
 
-RapidOCR:
+RapidOCR：
 
 ```bash
 docker build -t deeix-chat-rapidocr ./docker/rapidocr
 ```
 
-These services are optional. The admin file settings decide which extraction or OCR engine is active.
+这些服务都是可选能力，具体启用哪个提取或 OCR 引擎由后台文件设置决定。
 
-## Documentation
+## 文档入口
 
-- Backend guide: [backend/README.md](./backend/README.md)
-- Backend standards: [backend/docs/README.md](./backend/docs/README.md)
-- Frontend guide: [frontend/README.md](./frontend/README.md)
-- Contributing: [CONTRIBUTING.md](./CONTRIBUTING.md)
-- Security policy: [SECURITY.md](./SECURITY.md)
-- Swagger UI: `http://localhost:8080/swagger/index.html`
+- 后端说明：[backend/README.md](./backend/README.md)
+- 后端规范：[backend/docs/README.md](./backend/docs/README.md)
+- 前端说明：[frontend/README.md](./frontend/README.md)
+- 贡献指南：[CONTRIBUTING.md](./CONTRIBUTING.md)
+- 安全策略：[SECURITY.md](./SECURITY.md)
+- Swagger UI：`http://localhost:8080/swagger/index.html`
 
-## Acknowledgements
+## 鸣谢
 
-DEEIX Chat is built on the open-source ecosystem. Thanks to all maintainers and communities in the AI tooling ecosystem.
+DEEIX Chat 基于开源生态构建，感谢所有 AI 工具生态中的维护者和社区。
 
 - [Next.js](https://nextjs.org)
 - [Go](https://go.dev)
 - [LINUX DO](https://linux.do)
 
-## Contact & Community
+## 联系&交流
 
-- Email: [support@deeix.com](mailto:support@deeix.com)
-- Telegram: [t.me/deeix_chat](https://t.me/deeix_chat)
+- 邮箱：[support@deeix.com](mailto:support@deeix.com)
+- Telegram：[t.me/deeix_chat](https://t.me/deeix_chat)
 
-## License
+## 开源协议
 
-DEEIX Chat is licensed under the [Apache License 2.0](./LICENSE).
+DEEIX Chat 使用 [Apache License 2.0](./LICENSE) 授权。
