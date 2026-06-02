@@ -193,8 +193,17 @@ func (s *Service) RegisterWithEmail(ctx context.Context, email string, password 
 		}
 	}
 
+	userCount, err := s.repo.CountUsers(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	role := domainuser.RoleUser
 	var verifiedAt *time.Time
-	if cfg.EmailVerificationEnabled {
+	if userCount == 0 {
+		role = domainuser.RoleSuperAdmin
+		verifiedAt = &now
+	} else if cfg.EmailVerificationEnabled {
 		verifiedAt = &now
 	}
 	username := registrationUsername(normalizedEmail)
@@ -208,7 +217,7 @@ func (s *Service) RegisterWithEmail(ctx context.Context, email string, password 
 		DisplayName:     userapp.NormalizeGeneratedDisplayName(registrationDisplayName(normalizedEmail)),
 		Email:           normalizedEmail,
 		EmailSource:     domainuser.EmailSourceLocalRegister,
-		Role:            domainuser.RoleUser,
+		Role:            role,
 		Status:          domainuser.StatusActive,
 		Timezone:        "Etc/UTC",
 		Locale:          "en-US",

@@ -1143,6 +1143,16 @@ func (s *Service) resolveProviderUser(ctx context.Context, provider domainuser.I
 		return nil, fmt.Errorf("provider account is not registered")
 	}
 
+	userCount, err := s.repo.CountUsers(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	role := firstNonEmpty(provider.DefaultRole, domainuser.RoleUser)
+	if userCount == 0 {
+		role = domainuser.RoleSuperAdmin
+	}
+
 	emailVerifiedAt := (*time.Time)(nil)
 	emailSource := domainuser.EmailSourceProviderUnverified
 	if emailVerified && normalizedEmail != "" {
@@ -1156,7 +1166,7 @@ func (s *Service) resolveProviderUser(ctx context.Context, provider domainuser.I
 		AvatarURL:       strings.TrimSpace(avatarURL),
 		Email:           normalizedEmail,
 		EmailSource:     emailSource,
-		Role:            firstNonEmpty(provider.DefaultRole, domainuser.RoleUser),
+		Role:            role,
 		Status:          domainuser.StatusActive,
 		Timezone:        "Etc/UTC",
 		Locale:          "en-US",

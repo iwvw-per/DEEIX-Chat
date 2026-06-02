@@ -505,6 +505,10 @@ type providerLoginRepo struct {
 	providersBySlug           map[string]*domainuser.IdentityProvider
 }
 
+func (r *providerLoginRepo) CountUsers(ctx context.Context) (int64, error) {
+	return 1, nil
+}
+
 func (r *providerLoginRepo) GetIdentityProviderBySlug(ctx context.Context, slug string) (*domainuser.IdentityProvider, error) {
 	if r.providersBySlug == nil {
 		return nil, repository.ErrNotFound

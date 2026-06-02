@@ -167,54 +167,6 @@ func (s *Service) info(message string, fields ...zap.Field) {
 
 // EnsureBootstrapSuperAdmin 确保系统至少存在一个 superadmin。
 func (s *Service) EnsureBootstrapSuperAdmin(ctx context.Context) error {
-	count, err := s.repo.CountSuperAdmins(ctx)
-	if err != nil {
-		return err
-	}
-	if count > 0 {
-		return s.repo.MarkBootstrapSuperAdminPasswordResetRequired(ctx, s.cfg.Snapshot().AdminUsername)
-	}
-
-	cfg := s.cfg.Snapshot()
-	bootstrapPassword, err := generateBootstrapAdminPassword()
-	if err != nil {
-		return err
-	}
-	passwordHash, err := bcrypt.GenerateFromPassword([]byte(bootstrapPassword), passwordHashCost)
-	if err != nil {
-		return err
-	}
-	now := time.Now()
-
-	username := strings.TrimSpace(cfg.AdminUsername)
-	displayName := strings.TrimSpace(cfg.AdminDisplayName)
-	if displayName == "" {
-		displayName = username
-	}
-
-	item := &domainuser.User{
-		PublicID:    conv.NormalizePublicID(uuid.NewString()),
-		Username:    username,
-		DisplayName: displayName,
-		Email:       "",
-		Role:        domainuser.RoleSuperAdmin,
-		Status:      domainuser.StatusActive,
-		Timezone:    "Etc/UTC",
-		Locale:      "en-US",
-	}
-
-	if err = s.repo.CreateWithCredential(ctx, item, domainuser.Credential{
-		PasswordHash:      string(passwordHash),
-		PasswordAlgo:      "bcrypt",
-		PasswordEnabled:   true,
-		PasswordUpdatedAt: &now,
-		PasswordSetAt:     &now,
-		PasswordOrigin:    domainuser.PasswordOriginAdminCreated,
-		MustResetPassword: true,
-	}, 0, 0, nil, false); err != nil {
-		return err
-	}
-	s.info("bootstrap superadmin created", zap.String("username", username), zap.String("password", bootstrapPassword))
 	return nil
 }
 

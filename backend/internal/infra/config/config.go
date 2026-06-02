@@ -482,12 +482,17 @@ var defaultYAMLPaths = []string{
 // 动态业务配置使用硬编码默认值，启动后由 settings.RuntimeSettings 从 DB 覆盖。
 func Load() Config {
 	yc := loadYAML()
+	env := normalizeEnv(envOrNonEmpty("APP_ENV", yc.App.Env, "prod"))
+	defaultCORS := "http://127.0.0.1:8080,http://localhost:8080"
+	if env != "prod" {
+		defaultCORS = "*"
+	}
 	return Config{
 		// 静态基础设施
 		AppName:                      envOr("APP_NAME", yc.App.Name, "DEEIX Chat"),
-		Env:                          normalizeEnv(envOrNonEmpty("APP_ENV", yc.App.Env, "prod")),
+		Env:                          env,
 		HTTPPort:                     envOr("HTTP_PORT", yc.Server.HTTPPort, "8080"),
-		CORSAllowOrigin:              envOr("CORS_ALLOW_ORIGIN", yc.Server.CORSAllowOrigin, "http://127.0.0.1:8080,http://localhost:8080"),
+		CORSAllowOrigin:              envOr("CORS_ALLOW_ORIGIN", yc.Server.CORSAllowOrigin, defaultCORS),
 		TrustedProxies:               envOr("TRUSTED_PROXIES", yc.Server.TrustedProxies, ""),
 		PublicAPIBaseURL:             envOr("PUBLIC_API_BASE_URL", yc.Server.PublicAPIBaseURL, ""),
 		PublicWebBaseURL:             envOr("PUBLIC_WEB_BASE_URL", yc.Server.PublicWebBaseURL, ""),

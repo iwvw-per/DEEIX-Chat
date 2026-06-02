@@ -298,6 +298,17 @@ func (r *Repo) CountSuperAdmins(ctx context.Context) (int64, error) {
 	return count, nil
 }
 
+// CountUsers 统计总用户数量。
+func (r *Repo) CountUsers(ctx context.Context) (int64, error) {
+	var count int64
+	if err := r.db.WithContext(ctx).
+		Model(&model.User{}).
+		Count(&count).Error; err != nil {
+		return 0, translateError(err)
+	}
+	return count, nil
+}
+
 // GetActivePlanByCode 按编码查询启用套餐。
 func (r *Repo) GetActivePlanByCode(ctx context.Context, code string) (*domainbilling.Plan, error) {
 	var item model.BillingPlan

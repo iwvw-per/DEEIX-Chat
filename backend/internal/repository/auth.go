@@ -10,6 +10,7 @@ import (
 // AuthRepository 定义认证流程依赖的持久化能力。
 type AuthRepository interface {
 	CountSuperAdmins(ctx context.Context) (int64, error)
+	CountUsers(ctx context.Context) (int64, error)
 	CreateWithCredential(
 		ctx context.Context,
 		item *domainuser.User,

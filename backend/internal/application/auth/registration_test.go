@@ -423,6 +423,10 @@ type emailRegistrationRepo struct {
 	createCount int
 }
 
+func (r *emailRegistrationRepo) CountUsers(ctx context.Context) (int64, error) {
+	return 1, nil
+}
+
 func (r *emailRegistrationRepo) GetByEmail(ctx context.Context, email string) (*domainuser.User, error) {
 	return nil, repository.ErrNotFound
 }
@@ -458,6 +462,10 @@ type securityVerificationRepo struct {
 	user                 *domainuser.User
 	twoFactor            *domainuser.UserTwoFactor
 	pendingVerifications []domainuser.ContactVerification
+}
+
+func (r *securityVerificationRepo) CountUsers(ctx context.Context) (int64, error) {
+	return 1, nil
 }
 
 func (r *securityVerificationRepo) GetByID(ctx context.Context, userID uint) (*domainuser.User, error) {
