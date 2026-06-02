@@ -193,8 +193,8 @@ func (r *Repo) ListUpstreams(ctx context.Context, input repository.ListChannelUp
 
 func applyUpstreamListFilters(query *gorm.DB, input repository.ListChannelUpstreamsInput) *gorm.DB {
 	if keyword := strings.TrimSpace(input.Query); keyword != "" {
-		like := "%" + keyword + "%"
-		query = query.Where("name ILIKE ? OR base_url ILIKE ?", like, like)
+		like := "%" + strings.ToLower(keyword) + "%"
+		query = query.Where("LOWER(name) LIKE ? OR LOWER(base_url) LIKE ?", like, like)
 	}
 	if status := strings.TrimSpace(input.Status); status == "active" || status == "inactive" {
 		query = query.Where("status = ?", status)
@@ -432,6 +432,43 @@ func (r *Repo) ListModels(ctx context.Context, input repository.ListChannelModel
 }
 
 func (r *Repo) modelListQuery(ctx context.Context) *gorm.DB {
+	if r.db.Dialector.Name() == "sqlite" {
+		return r.db.WithContext(ctx).
+			Table("llm_platform_models AS m").
+			Select(
+				"m.id, m.name AS platform_model_name, m.vendor, m.kinds_json, m.icon, m.capabilities_json, m.system_prompt, m.status, m.description, m.sort_order, m.created_at, m.updated_at, " +
+					"COALESCE(stats.source_count, 0) AS source_count, COALESCE(stats.active_source_count, 0) AS active_source_count, COALESCE(stats.protocols_json, '[]') AS protocols_json",
+			).
+			Joins(
+				`LEFT JOIN (
+					SELECT r.platform_model_id,
+						COUNT(*) AS source_count,
+						SUM(CASE WHEN r.status = 'active' AND um.status = 'active' AND u.status = 'active' THEN 1 ELSE 0 END) AS active_source_count,
+						COALESCE(
+							(
+								SELECT json_group_array(p)
+								FROM (
+									SELECT DISTINCT r2.protocol AS p
+									FROM llm_model_routes r2
+									JOIN llm_upstream_models um2 ON um2.id = r2.upstream_model_id
+									JOIN llm_upstreams u2 ON u2.id = um2.upstream_id
+									WHERE r2.platform_model_id = r.platform_model_id
+										AND r2.status = 'active'
+										AND um2.status = 'active'
+										AND u2.status = 'active'
+										AND r2.protocol != ''
+								)
+							),
+							'[]'
+						) AS protocols_json
+					FROM llm_model_routes r
+					JOIN llm_upstream_models um ON um.id = r.upstream_model_id
+					JOIN llm_upstreams u ON u.id = um.upstream_id
+					GROUP BY r.platform_model_id
+				) AS stats ON stats.platform_model_id = m.id`,
+			)
+	}
+
 	return r.db.WithContext(ctx).
 		Table("llm_platform_models AS m").
 		Select(
@@ -459,8 +496,8 @@ func applyModelListFilters(query *gorm.DB, input repository.ListChannelModelsInp
 		query = query.Where("m.status = ?", status)
 	}
 	if keyword := strings.TrimSpace(input.Query); keyword != "" {
-		like := "%" + keyword + "%"
-		query = query.Where("m.name ILIKE ? OR m.vendor ILIKE ? OR m.description ILIKE ?", like, like, like)
+		like := "%" + strings.ToLower(keyword) + "%"
+		query = query.Where("LOWER(m.name) LIKE ? OR LOWER(m.vendor) LIKE ? OR LOWER(m.description) LIKE ?", like, like, like)
 	}
 	if vendor := strings.TrimSpace(input.Vendor); vendor != "" {
 		query = query.Where("m.vendor = ?", vendor)
@@ -797,9 +834,9 @@ func (r *Repo) GetUpstreamModelRouteByNames(
 
 func applyUpstreamModelListFilters(query *gorm.DB, input repository.ListChannelUpstreamModelsInput) *gorm.DB {
 	if keyword := strings.TrimSpace(input.Query); keyword != "" {
-		like := "%" + keyword + "%"
+		like := "%" + strings.ToLower(keyword) + "%"
 		query = query.Where(
-			"um.upstream_model_name ILIKE ? OR um.binding_code ILIKE ? OR pm.name ILIKE ? OR r.protocol ILIKE ?",
+			"LOWER(um.upstream_model_name) LIKE ? OR LOWER(um.binding_code) LIKE ? OR LOWER(pm.name) LIKE ? OR LOWER(r.protocol) LIKE ?",
 			like,
 			like,
 			like,

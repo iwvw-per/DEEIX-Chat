@@ -927,8 +927,8 @@ func (r *Repo) ListRedemptionCodes(ctx context.Context, filter repository.Redemp
 		}
 	}
 	if keyword := strings.TrimSpace(filter.Query); keyword != "" {
-		like := "%" + keyword + "%"
-		query = query.Where("description ILIKE ? OR code_hint ILIKE ?", like, like)
+		like := "%" + strings.ToLower(keyword) + "%"
+		query = query.Where("LOWER(description) LIKE ? OR LOWER(code_hint) LIKE ?", like, like)
 	}
 	if err := query.Count(&total).Error; err != nil {
 		return nil, 0, translateError(err)
@@ -1236,8 +1236,8 @@ func (r *Repo) ListModelPricing(ctx context.Context, query string, offset int, l
 
 	dbq := r.db.WithContext(ctx).Model(&model.ModelPricing{})
 	if keyword := strings.TrimSpace(query); keyword != "" {
-		like := "%" + keyword + "%"
-		dbq = dbq.Where("platform_model_name ILIKE ?", like)
+		like := "%" + strings.ToLower(keyword) + "%"
+		dbq = dbq.Where("LOWER(platform_model_name) LIKE ?", like)
 	}
 
 	if err := dbq.Count(&total).Error; err != nil {
@@ -1307,8 +1307,8 @@ func (r *Repo) ListUsageByUser(ctx context.Context, userID uint, filter reposito
 	var total int64
 	query := r.db.WithContext(ctx).Model(&model.UsageLedger{}).Where("user_id = ?", userID)
 	if search := strings.TrimSpace(filter.Query); search != "" {
-		like := "%" + search + "%"
-		query = query.Where("platform_model_name ILIKE ?", like)
+		like := "%" + strings.ToLower(search) + "%"
+		query = query.Where("LOWER(platform_model_name) LIKE ?", like)
 	}
 	switch strings.TrimSpace(filter.Status) {
 	case "free":
@@ -1354,9 +1354,9 @@ func (r *Repo) ListUsageLogs(ctx context.Context, filter repository.UsageLogList
 		query = query.Where("user_id = ?", filter.UserID)
 	}
 	if search := strings.TrimSpace(filter.Query); search != "" {
-		like := "%" + search + "%"
+		like := "%" + strings.ToLower(search) + "%"
 		query = query.Where(
-			"platform_model_name ILIKE ? OR upstream_model_name ILIKE ? OR upstream_name ILIKE ? OR routed_binding_code ILIKE ? OR provider_protocol ILIKE ?",
+			"LOWER(platform_model_name) LIKE ? OR LOWER(upstream_model_name) LIKE ? OR LOWER(upstream_name) LIKE ? OR LOWER(routed_binding_code) LIKE ? OR LOWER(provider_protocol) LIKE ?",
 			like,
 			like,
 			like,
@@ -1372,7 +1372,11 @@ func (r *Repo) ListUsageLogs(ctx context.Context, filter repository.UsageLogList
 		query = query.Where("is_free_model = ?", true)
 	case "token", "call", "duration", "tiered":
 		query = query.Where("is_free_model = ?", false)
-		query = query.Where("COALESCE(NULLIF(pricing_snapshot_json, '')::jsonb ->> 'pricing_mode', 'token') = ?", strings.TrimSpace(filter.BillingMode))
+		if r.db.Dialector.Name() == "sqlite" {
+			query = query.Where("COALESCE(json_extract(NULLIF(pricing_snapshot_json, ''), '$.pricing_mode'), 'token') = ?", strings.TrimSpace(filter.BillingMode))
+		} else {
+			query = query.Where("COALESCE(NULLIF(pricing_snapshot_json, '')::jsonb ->> 'pricing_mode', 'token') = ?", strings.TrimSpace(filter.BillingMode))
+		}
 	}
 	if filter.CreatedFrom != nil {
 		query = query.Where("created_at >= ?", *filter.CreatedFrom)
