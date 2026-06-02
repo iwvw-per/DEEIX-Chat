@@ -109,6 +109,25 @@ NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8080
 
 ### Docker 部署
 
+```compose
+services:
+  app:
+    image: iwvw/deeix-chat:dev
+    container_name: deeix-chat
+    ports:
+      - "8585:8080"
+    volumes:
+      - ./data:/app/storage
+    environment:
+      - DATABASE_TYPE=sqlite
+      - SQLITE_DSN=/app/storage/deeix_chat.db
+      - FRONTEND_DIST_DIR=/app/frontend/out
+      - REDIS_ADDR=none
+      - JWT_SECRET=change-me-to-a-strong-random-jwt-secret
+      - DATA_ENCRYPTION_KEY=change-me-to-a-strong-data-encryption-key-32-bytes
+      - APP_ENV=dev
+```
+
 优先级：`环境变量 > config.yaml > 代码内置默认值`。
 
 Docker 镜像工作目录是 `/app`。使用默认 compose 挂载时，后端会自动读取 `/app/config.yaml`：
