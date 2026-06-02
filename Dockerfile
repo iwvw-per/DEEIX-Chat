@@ -37,16 +37,12 @@ ARG TARGETARCH
 ARG GIT_COMMIT=unknown
 ARG BUILD_TIME=""
 COPY VERSION /src/VERSION
-COPY backend/go.mod backend/go.sum ./
-
-RUN --mount=type=cache,target=/go/pkg/mod \
-    go mod download
-
 COPY backend ./
 
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
-    VERSION="$(cat /src/VERSION)" \
+    go mod tidy \
+    && VERSION="$(cat /src/VERSION)" \
     && if [ -z "${BUILD_TIME}" ]; then BUILD_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)"; fi \
     && CGO_ENABLED=0 \
        GOOS=${TARGETOS} \
