@@ -136,6 +136,12 @@ func migrate(db *gorm.DB, cfg config.Config) error {
 	}
 
 	if db.Dialector.Name() == "sqlite" {
+		if err := seedLLMSettings(db); err != nil {
+			return err
+		}
+		if err := seedBillingCatalog(db); err != nil {
+			return err
+		}
 		return nil
 	}
 
